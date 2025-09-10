@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フラッシュカード学習アプリ</title>
+    <link rel="stylesheet" href="flash.css"></head>
+</head>
+<body>
+    <div class="container">
+        <!-- メイン画面 -->
+        <div id="main-screen">
+            <h1>フラッシュカード学習アプリ</h1>
+            <ul>
+            <li>ボタンをクリックして学習を開始します。全問以外は該当の問題だけ表示されます。</li>
+            <li>カードを選ぶと１問ずつ、一覧を選ぶと該当の問題の一覧が表示されます。</li>
+            </ul>
+            <div id="sets-container">
+                <div class="loading">問題・正解セットの一覧.csvを読み込んでいます...</div>
+            </div>
+        </div>
+
+        <!-- 学習画面 -->
+        <div id="study-screen" class="study-screen">
+            <button id="back-to-main" class="back-btn">メニューに戻る</button>
+            <div class="mode-info">
+                <h2 id="study-title"></h2>
+                <p class="progress-info">問題 <span id="current-question"></span>/<span id="total-questions"></span></p>
+                問題ごとに未暗記か暗記済みかを選択していきます。
+            </div>
+            <div class="status" id="study-status">
+                <button class="total-btn" onclick="filterAndDisplay('all', getViewMode())">全問: <span id="study-total-count">0</span></button>
+                <button class="untouched-btn" onclick="filterAndDisplay(0, getViewMode())">未着手: <span id="untouched-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, getViewMode())">未暗記: <span id="not-memorized-count">0</span></button>
+                <button class="completed-btn" onclick="filterAndDisplay(2, getViewMode())">暗記済み: <span id="completed-count">0</span></button>
+                <div class="view-mode-selector">
+                    <input type="radio" id="study-card-mode" name="study-view-mode" value="card" checked>
+                    <label for="study-card-mode">カード</label>
+                    <input type="radio" id="study-list-mode" name="study-view-mode" value="list">
+                    <label for="study-list-mode">一覧</label>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-text" id="question-text"></div>
+                <div class="answer-text" id="answer-text" style="display: none;"></div>
+                <div class="explanation-text" id="explanation-text" style="display: none;"></div>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-question" class="secondary-btn">前へ</button>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="untouched-radio" name="status" value="0">
+                        <label for="untouched-radio"><span class="label-untouched">未着手</span></label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="not-memorized-radio" name="status" value="1">
+                        <label for="not-memorized-radio"><span class="label-not-memorized">未暗記</span></label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="completed-radio" name="status" value="2">
+                        <label for="completed-radio"><span class="label-completed">暗記済み</span></label>
+                    </div>
+                </div>
+                <button id="next-question" class="secondary-btn">次へ</button>
+            </div>
+            
+            <div style="text-align: center;">
+                <button id="toggle-answer" class="success-btn">正解を見て分類する</button>
+                <button id="toggle-explanation" class="warning-btn" style="display: none;">解説を表示</button>
+            </div>
+        </div>
+
+        <!-- 一覧画面 -->
+        <div id="list-screen" class="list-screen">
+            <button id="back-to-main-from-list" class="back-btn">メニューに戻る</button>
+            <div class="mode-info" id="list-title"></div>
+            <div class="status" id="list-status">
+                <button class="total-btn" onclick="filterAndDisplay('all', 'list')">全問: <span id="list-total-count">0</span></button>
+                <button class="untouched-btn" onclick="filterAndDisplay(0, 'list')">未着手: <span id="list-untouched-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, 'list')">未暗記: <span id="list-not-memorized-count">0</span></button>
+                <button class="completed-btn" onclick="filterAndDisplay(2, 'list')">暗記済み: <span id="list-completed-count">0</span></button>
+                <div class="view-mode-selector">
+                    <input type="radio" id="list-card-mode" name="list-view-mode" value="card">
+                    <label for="list-card-mode">カード</label>
+                    <input type="radio" id="list-list-mode" name="list-view-mode" value="list" checked>
+                    <label for="list-list-mode">一覧</label>
+                </div>
+            </div>
+            <div id="questions-list"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="flash.js"></script>
+</body>
+</html>
