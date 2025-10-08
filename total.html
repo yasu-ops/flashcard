@@ -1,3 +1,484 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フラッシュカード学習アプリ</title>
+    <style>
+        body {
+            font-family: 'Hiragino Sans', 'Yu Gothic', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* 学習記録操作ボタン */
+        .record-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .record-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .record-btn:hover {
+            background: #138496;
+        }
+
+        .record-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* 隠しファイル入力 */
+        #import-file {
+            display: none;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .set-item {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .set-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .set-info {
+            margin: 10px 0;
+            color: #666;
+        }
+        
+        .status {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            font-size: 14px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .status button {
+            padding: 6px 12px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            background: none;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .status button.active::before {
+            content: "▶ ";
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .status .completed-btn { 
+            background: #d4edda; 
+            color: #155724; 
+            border-color: #c3e6cb;
+        }
+        .status .completed-btn:hover { 
+            background: #c3e6cb;
+            transform: translateY(-1px);
+        }
+        
+        .status .not-memorized-btn { 
+            background: #fff3cd; 
+            color: #856404; 
+            border-color: #ffeaa7;
+        }
+        .status .not-memorized-btn:hover { 
+            background: #ffeaa7;
+            transform: translateY(-1px);
+        }
+        
+        .status .untouched-btn { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border-color: #f5c6cb;
+        }
+        .status .untouched-btn:hover { 
+            background: #f5c6cb;
+            transform: translateY(-1px);
+        }
+        
+        .status .total-btn { 
+            background: #e2e3e5; 
+            color: #383d41; 
+            border-color: #d6d8db;
+        }
+        .status .total-btn:hover { 
+            background: #d6d8db;
+            transform: translateY(-1px);
+        }
+        
+        .label-untouched {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .label-not-memorized {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .label-completed {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .view-mode-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: 10px;
+        }
+        
+        .view-mode-selector input[type="radio"] {
+            margin: 0 5px 0 0;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .primary-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background: #0056b3;
+        }
+        
+        .secondary-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .secondary-btn:hover {
+            background: #545b62;
+        }
+        
+        .secondary-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .success-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .success-btn:hover {
+            background: #1e7e34;
+        }
+        
+        .warning-btn {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .warning-btn:hover {
+            background: #e0a800;
+        }
+        
+        .study-screen, .list-screen {
+            display: none;
+        }
+        
+        .question-card {
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .answer-text {
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .explanation-text {
+            font-size: 16px;
+            line-height: 1.6;
+            padding: 20px;
+            background: #fff3cd;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .question-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        
+        .question-content {
+            flex: 1;
+            margin-right: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .back-btn:hover {
+            background: #545b62;
+        }
+        
+        .mode-info {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+        
+        .progress-info {
+            text-align: center;
+            margin: 10px 0;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 学習記録操作ボタン（メイン画面のみ） -->
+        <div id="record-controls" class="record-controls">
+            <button id="export-record" class="record-btn">学習記録エクスポート</button>
+            <button id="import-record" class="record-btn">学習記録インポート</button>
+            <input type="file" id="import-file" accept=".csv" />
+        </div>
+
+        <!-- メイン画面 -->
+        <div id="main-screen">
+            <h1>仕分けて覚える暗記アプリ</h1>
+            <ul>
+            <li>ボタンをクリックして学習を開始します。全問以外は該当の問題だけ表示されます。</li>
+            <li>カードを選ぶと１問ずつ、一覧を選ぶと該当の問題の一覧が表示されます。</li>
+            <li>学習事項を未暗記・暗記済みに仕分けて覚えていきます。</li>
+            </ul>
+            <div id="sets-container">
+                <div class="loading">問題・正解セットの一覧.csvを読み込んでいます...</div>
+            </div>
+        </div>
+
+        <!-- 学習画面 -->
+        <div id="study-screen" class="study-screen">
+            <button id="back-to-main" class="back-btn">メニューに戻る</button>
+            <div class="mode-info">
+                <h2 id="study-title"></h2>
+                <p class="progress-info">問題 <span id="current-question"></span>/<span id="total-questions"></span></p>
+                問題ごとに未暗記か暗記済みかを選択していきます。
+            </div>
+            <div class="status" id="study-status">
+                <button class="total-btn" onclick="filterAndDisplay('all', getViewMode())">全問: <span id="study-total-count">0</span></button>
+                <button class="untouched-btn" onclick="filterAndDisplay(0, getViewMode())">未着手: <span id="untouched-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, getViewMode())">未暗記: <span id="not-memorized-count">0</span></button>
+                <button class="completed-btn" onclick="filterAndDisplay(2, getViewMode())">暗記済み: <span id="completed-count">0</span></button>
+                <div class="view-mode-selector">
+                    <input type="radio" id="study-card-mode" name="study-view-mode" value="card" checked>
+                    <label for="study-card-mode">カード</label>
+                    <input type="radio" id="study-list-mode" name="study-view-mode" value="list">
+                    <label for="study-list-mode">一覧</label>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-text" id="question-text"></div>
+                <div class="answer-text" id="answer-text" style="display: none;"></div>
+                <div class="explanation-text" id="explanation-text" style="display: none;"></div>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-question" class="secondary-btn">前へ</button>
+                <div class="radio-group">仕分け：
+                    <div class="radio-item">
+                        <input type="radio" id="untouched-radio" name="status" value="0">
+                        <label for="untouched-radio"><span class="label-untouched">未着手</span></label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="not-memorized-radio" name="status" value="1">
+                        <label for="not-memorized-radio"><span class="label-not-memorized">未暗記</span></label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="completed-radio" name="status" value="2">
+                        <label for="completed-radio"><span class="label-completed">暗記済み</span></label>
+                    </div>
+                </div>
+                <button id="next-question" class="secondary-btn">次へ</button>
+            </div>
+            
+            <div style="text-align: center;">
+                <button id="toggle-answer" class="success-btn">正解を見て分類する</button>
+                <button id="toggle-explanation" class="warning-btn" style="display: none;">解説を表示</button>
+            </div>
+        </div>
+
+        <!-- 一覧画面 -->
+        <div id="list-screen" class="list-screen">
+            <button id="back-to-main-from-list" class="back-btn">メニューに戻る</button>
+            <div class="mode-info" id="list-title"></div>
+            <div class="status" id="list-status">
+                <button class="total-btn" onclick="filterAndDisplay('all', 'list')">全問: <span id="list-total-count">0</span></button>
+                <button class="untouched-btn" onclick="filterAndDisplay(0, 'list')">未着手: <span id="list-untouched-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, 'list')">未暗記: <span id="list-not-memorized-count">0</span></button>
+                <button class="completed-btn" onclick="filterAndDisplay(2, 'list')">暗記済み: <span id="list-completed-count">0</span></button>
+                <div class="view-mode-selector">
+                    <input type="radio" id="list-card-mode" name="list-view-mode" value="card">
+                    <label for="list-card-mode">カード</label>
+                    <input type="radio" id="list-list-mode" name="list-view-mode" value="list" checked>
+                    <label for="list-list-mode">一覧</label>
+                </div>
+            </div>
+            <div id="questions-list"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script>
         let questionSets = [];
         let currentSet = null;
         let currentQuestions = [];
@@ -211,7 +692,7 @@
                 let status = localStorage.getItem(statusKey);
                 
                 if (!status) {
-                    // 初期状態（全て未着手問題）
+                    // 初期状態（全て未着手）
                     status = Array(set.questionCount).fill(0).join(',');
                     localStorage.setItem(statusKey, status);
                 }
@@ -225,7 +706,7 @@
                 }
                 
                 // 統計を計算
-                const counts = [0, 0, 0]; // 未着手問題, 未暗記問題, 暗記済み問題
+                const counts = [0, 0, 0]; // 未着手, 未暗記, 暗記済み
                 set.memoryStatus.forEach(s => {
                     const status = parseInt(s);
                     if (status >= 0 && status <= 2) {
@@ -253,18 +734,17 @@
                 setDiv.className = 'set-item';
                 
                 setDiv.innerHTML = `
-                    <div class="set-header">${set.id}.『 ${set.title}』コース</div>
+                    <div class="set-header">${set.id}. ${set.title}</div>
                     <div class="status">
-                        <!--<button class="total-btn" onclick="startStudyWithFilter(${set.id}, 'all', 'card')">全問: ${set.questionCount}</button>-->
-                        <button class="untouched-btn" onclick="startStudyWithFilter(${set.id}, 0, 'card')">未着手問題: ${set.untouchedCount}</button>
-                        <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1, 'card')">未暗記問題: ${set.notMemorizedCount}</button>
-                        <button class="completed-btn" onclick="startStudyWithFilter(${set.id}, 2, 'card')">暗記済み問題: ${set.completedCount}</button>
-                        表示方式
+                        <button class="total-btn" onclick="startStudyWithFilter(${set.id}, 'all', 'card')">全問: ${set.questionCount}</button>
+                        <button class="untouched-btn" onclick="startStudyWithFilter(${set.id}, 0, 'card')">未着手: ${set.untouchedCount}</button>
+                        <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1, 'card')">未暗記: ${set.notMemorizedCount}</button>
+                        <button class="completed-btn" onclick="startStudyWithFilter(${set.id}, 2, 'card')">暗記済み: ${set.completedCount}</button>
                         <div class="view-mode-selector">
                             <input type="radio" id="main-card-mode-${set.id}" name="main-view-mode-${set.id}" value="card" checked onchange="updateMainViewMode(${set.id})">
-                            <label for="main-card-mode-${set.id}">カード型</label>
+                            <label for="main-card-mode-${set.id}">カード</label>
                             <input type="radio" id="main-list-mode-${set.id}" name="main-view-mode-${set.id}" value="list" onchange="updateMainViewMode(${set.id})">
-                            <label for="main-list-mode-${set.id}">一覧型</label>
+                            <label for="main-list-mode-${set.id}">一覧</label>
                         </div>
                     </div>
                 `;
@@ -333,9 +813,9 @@
                 filteredQuestions = currentQuestions.filter((q, index) => {
                     switch (filter) {
                         case 'all': return true;
-                        case 0: return memoryStatus[index] === 0; // 未着手問題
-                        case 1: return memoryStatus[index] === 1; // 未暗記問題
-                        case 2: return memoryStatus[index] === 2; // 暗記済み問題
+                        case 0: return memoryStatus[index] === 0; // 未着手
+                        case 1: return memoryStatus[index] === 1; // 未暗記
+                        case 2: return memoryStatus[index] === 2; // 暗記済み
                         default: return true;
                     }
                 });
@@ -370,7 +850,7 @@
             
             // UI更新
             document.getElementById('study-title').textContent = currentSet.title;
-            //document.getElementById('study-total-count').textContent = currentSet.questionCount;
+            document.getElementById('study-total-count').textContent = currentSet.questionCount;
             
             // ラジオボタンを設定
             document.getElementById('study-card-mode').checked = true;
@@ -387,7 +867,7 @@
             document.getElementById('list-screen').style.display = 'block';
             
             document.getElementById('list-title').textContent = currentSet.title;
-            //document.getElementById('list-total-count').textContent = currentSet.questionCount;
+            document.getElementById('list-total-count').textContent = currentSet.questionCount;
             
             // ラジオボタンを設定
             document.getElementById('list-card-mode').checked = false;
@@ -402,25 +882,21 @@
         function filterAndDisplay(filter, viewMode) {
             currentFilter = filter;
             
-
-            
             // フィルタリング
             filteredQuestions = currentQuestions.filter((q, index) => {
                 switch (filter) {
                     case 'all': return true;
-                    case 0: return memoryStatus[index] === 0; // 未着手問題
-                    case 1: return memoryStatus[index] === 1; // 未暗記問題
-                    case 2: return memoryStatus[index] === 2; // 暗記済み問題
+                    case 0: return memoryStatus[index] === 0; // 未着手
+                    case 1: return memoryStatus[index] === 1; // 未暗記
+                    case 2: return memoryStatus[index] === 2; // 暗記済み
                     default: return true;
                 }
             });
             
             if (filteredQuestions.length === 0) {
-                //alert('対象となる問題がありません。');
+                alert('対象となる問題がありません。');
                 return;
             }
-
-
             
             if (viewMode === 'card') {
                 currentQuestionIndex = 0;
@@ -463,7 +939,6 @@
             
             document.getElementById('study-title').textContent = currentSet.title;
             // 問題表示（HTMLタグを解釈）
-            document.getElementById('current-question').innerHTML = currentQuestionIndex + 1;
             document.getElementById('question-text').innerHTML = currentQ.question;
             document.getElementById('answer-text').innerHTML = currentQ.answer;
             document.getElementById('explanation-text').innerHTML = currentQ.explanation;
@@ -474,8 +949,8 @@
             document.getElementById('toggle-explanation').textContent = '解説を表示';
             
             // 進捗表示
-            //document.getElementById('current-question').textContent = currentQuestionIndex + 1;
-            //document.getElementById('total-questions').textContent = filteredQuestions.length;
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
+            document.getElementById('total-questions').textContent = filteredQuestions.length;
             
             // ラジオボタンの設定
             const status = memoryStatus[originalIndex];
@@ -511,13 +986,13 @@
             document.getElementById('completed-count').textContent = counts[2];
             document.getElementById('not-memorized-count').textContent = counts[1];
             document.getElementById('untouched-count').textContent = counts[0];
-            //document.getElementById('study-total-count').textContent = currentSet.questionCount;
+            document.getElementById('study-total-count').textContent = currentSet.questionCount;
             
             // リスト画面用
             document.getElementById('list-completed-count').textContent = counts[2];
             document.getElementById('list-not-memorized-count').textContent = counts[1];
             document.getElementById('list-untouched-count').textContent = counts[0];
-            //document.getElementById('list-total-count').textContent = currentSet.questionCount;
+            document.getElementById('list-total-count').textContent = currentSet.questionCount;
         }
 
         // アクティブなフィルターボタンを更新
@@ -533,9 +1008,9 @@
             
             let targetClass;
             switch(currentFilter) {
-                // case 'all':
-                //    targetClass = 'total-btn';
-                //    break;
+                case 'all':
+                    targetClass = 'total-btn';
+                    break;
                 case 0:
                     targetClass = 'untouched-btn';
                     break;
@@ -562,37 +1037,34 @@
             listContainer.innerHTML = '';
             document.getElementById('list-title').textContent = currentSet.title;
 
-            let i=0;
             filteredQuestions.forEach((question, displayIndex) => {
                 const originalIndex = currentQuestions.findIndex(q => q.number === question.number);
                 const questionDiv = document.createElement('div');
                 questionDiv.className = 'question-list-item';
-                i++;
+                
                 questionDiv.innerHTML = `
                     <div class="question-content">
-                        <!--<strong>${question.number}:</strong> ${question.question}-->
-                        <strong>${i}:</strong> ${question.question}
-                        <div class="controls">
-                            【分類】
-                            <div class="radio-group">
-                                <div class="radio-item">
-                                    <input type="radio" id="list-untouched-${question.number}" name="list-status-${question.number}" value="0" ${memoryStatus[originalIndex] === 0 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 0)">
-                                    <label for="list-untouched-${question.number}"><span class="label-untouched">未着手問題</span></label>
-                                </div>
-                                <div class="radio-item">
-                                    <input type="radio" id="list-not-memorized-${question.number}" name="list-status-${question.number}" value="1" ${memoryStatus[originalIndex] === 1 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 1)">
-                                    <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">未暗記問題</span></label>
-                                </div>
-                                <div class="radio-item">
-                                    <input type="radio" id="list-completed-${question.number}" name="list-status-${question.number}" value="2" ${memoryStatus[originalIndex] === 2 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 2)">
-                                    <label for="list-completed-${question.number}"><span class="label-completed">暗記済み問題</span></label>
-                                </div>
-                            </div>
-                            <button class="success-btn" onclick="toggleQuestionAnswer(${question.number})">正解表示</button>
-                            <button class="warning-btn" id="explanation-btn-${question.number}" onclick="toggleQuestionExplanation(${question.number})" style="display: none;">解説表示</button>
-                        </div>
+                        <strong>${question.number}:</strong> ${question.question}
                         <div id="answer-${question.number}" style="display: none; margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">${question.answer}</div>
                         <div id="explanation-${question.number}" style="display: none; margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 5px;">${question.explanation}</div>
+                    </div>
+                    <div class="controls">
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="list-untouched-${question.number}" name="list-status-${question.number}" value="0" ${memoryStatus[originalIndex] === 0 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 0)">
+                                <label for="list-untouched-${question.number}"><span class="label-untouched">未着手</span></label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="list-not-memorized-${question.number}" name="list-status-${question.number}" value="1" ${memoryStatus[originalIndex] === 1 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 1)">
+                                <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">未暗記</span></label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="list-completed-${question.number}" name="list-status-${question.number}" value="2" ${memoryStatus[originalIndex] === 2 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 2)">
+                                <label for="list-completed-${question.number}"><span class="label-completed">暗記済み</span></label>
+                            </div>
+                        </div>
+                        <button class="success-btn" onclick="toggleQuestionAnswer(${question.number})">正解表示</button>
+                        <button class="warning-btn" id="explanation-btn-${question.number}" onclick="toggleQuestionExplanation(${question.number})" style="display: none;">解説表示</button>
                     </div>
                 `;
                 
@@ -773,3 +1245,6 @@
                 });
             });
         });
+    </script>
+</body>
+</html>

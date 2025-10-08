@@ -11,12 +11,47 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
         
         h1 {
             text-align: center;
             color: #333;
             margin-bottom: 30px;
+        }
+
+        /* 学習記録操作ボタン */
+        .record-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .record-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .record-btn:hover {
+            background: #138496;
+        }
+
+        .record-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* 隠しファイル入力 */
+        #import-file {
+            display: none;
         }
         
         .error {
@@ -26,6 +61,15 @@
             border-radius: 5px;
             margin: 20px 0;
             border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            color: #155724;
+            background: #d4edda;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
         }
         
         .set-item {
@@ -69,7 +113,7 @@
         }
         
         .status button.active::before {
-            content: "■ ";
+            content: "▶ ";
             display: block;
             text-align: center;
             font-size: 12px;
@@ -141,6 +185,16 @@
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .label-siwake {
+            background-color: #d4edda;
+            color: #155724;
+            border: none;
             padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
@@ -229,8 +283,8 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            text-align: center;
+            align-items:normal;
+            text-align:left;
         }
         
         .question-text {
@@ -312,7 +366,7 @@
         }
         
         .mode-info {
-            text-align: center;
+            text-align: left;
             margin: 20px 0;
             padding: 10px;
             background: #e9ecef;
