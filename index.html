@@ -17,12 +17,12 @@
 
         <!-- メイン画面 -->
         <div id="main-screen">
-            <h1>分類して覚える暗記アプリ</h1>
+            <h1>分類して暗記</h1>
             <ul>
-            <li>やること＝＝＞<span class="label-untouched">未着手問題</span>を<span class="label-not-memorized">未暗記問題</span>・<span class="label-completed">暗記済み問題</span>に分類。</li>
+            <li>やること＝＝＞<span class="label-untouched">未分類</span>を<span class="label-not-memorized">未暗記</span>・<span class="label-completed">暗記済み</span>に分類。</li>
                 <ul>
-                    <li><span class="label-not-memorized">未暗記問題</span>は少しずつ<span class="label-completed">暗記済み問題</span>に変えていく！</li>
-                    <li><span class="label-completed">暗記済み問題</span>は時々見直し、忘れていないか確認する！</li>
+                    <li><span class="label-not-memorized">未暗記</span>は少しずつ<span class="label-completed">暗記済み</span>に変えていく！</li>
+                    <li><span class="label-completed">暗記済み</span>は時々見直し、忘れていないか確認！</li>
                 </ul>
             <li>表示方式…カード型；１問ずつ表示／一覧型：全問を一覧表示</li>
             </ul>
@@ -39,9 +39,9 @@
             </div>
             <div class="status" id="study-status">
                 <!--<button class="total-btn" onclick="filterAndDisplay('all', getViewMode())">全問: <span id="study-total-count">0</span></button>-->
-                <button class="untouched-btn" onclick="filterAndDisplay(0, getViewMode())">未着手問題: <span id="untouched-count">0</span></button>
-                <button class="not-memorized-btn" onclick="filterAndDisplay(1, getViewMode())">未暗記問題: <span id="not-memorized-count">0</span></button>
-                <button class="completed-btn" onclick="filterAndDisplay(2, getViewMode())">暗記済み問題: <span id="completed-count">0</span></button>
+                <button class="untouched-btn" onclick="filterAndDisplay(0, getViewMode())">未分類: <span id="untouched-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, getViewMode())">未暗記: <span id="not-memorized-count">0</span></button>
+                <button class="completed-btn" onclick="filterAndDisplay(2, getViewMode())">暗記済み: <span id="completed-count">0</span></button>
                 表示方式
                 <div class="view-mode-selector">
                     <input type="radio" id="study-card-mode" name="study-view-mode" value="card" checked>
@@ -62,18 +62,18 @@
                 <button id="prev-question" class="secondary-btn">前へ</button>
                 
                 <div class="radio-group">
-                    <div class="radio-item"><b>【分類】</b></div>
+                    <div class="radio-item"><b>分類</b></div>
                     <div class="radio-item">
                         <input type="radio" id="untouched-radio" name="status" value="0">
-                        <label for="untouched-radio"><span class="label-untouched">未着手問題</span></label>
+                        <label for="untouched-radio"><span class="label-untouched">未分類</span></label>
                     </div>
                     <div class="radio-item">
                         <input type="radio" id="not-memorized-radio" name="status" value="1">
-                        <label for="not-memorized-radio"><span class="label-not-memorized">未暗記問題</span></label>
+                        <label for="not-memorized-radio"><span class="label-not-memorized">未暗記</span></label>
                     </div>
                     <div class="radio-item">
                         <input type="radio" id="completed-radio" name="status" value="2">
-                        <label for="completed-radio"><span class="label-completed">暗記済み問題</span></label>
+                        <label for="completed-radio"><span class="label-completed">暗記済み</span></label>
                     </div>
                 </div>
                 <button id="next-question" class="secondary-btn">次へ</button>
@@ -92,9 +92,9 @@
             <b>『<span id="list-title"></span>』コース</b>
             <div class="status" id="list-status">
                 <!--<button class="total-btn" onclick="filterAndDisplay('all', 'list')">全問: <span id="list-total-count">0</span></button>-->
-                <button class="untouched-btn" onclick="filterAndDisplay(0, 'list')">未着手問題: <span id="list-untouched-count">0</span></button>
-                <button class="not-memorized-btn" onclick="filterAndDisplay(1, 'list')">未暗記問題: <span id="list-not-memorized-count">0</span></button>
-                <button class="completed-btn" onclick="filterAndDisplay(2, 'list')">暗記済み問題: <span id="list-completed-count">0</span></button>
+                <button class="untouched-btn" onclick="filterAndDisplay(0, 'list')">未分類: <span id="list-untouched-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, 'list')">未暗記: <span id="list-not-memorized-count">0</span></button>
+                <button class="completed-btn" onclick="filterAndDisplay(2, 'list')">暗記済み: <span id="list-completed-count">0</span></button>
                 表示方式
                 <div class="view-mode-selector">
                     <input type="radio" id="list-card-mode" name="list-view-mode" value="card">

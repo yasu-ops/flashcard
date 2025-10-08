@@ -211,7 +211,7 @@
                 let status = localStorage.getItem(statusKey);
                 
                 if (!status) {
-                    // 初期状態（全て未着手問題）
+                    // 初期状態（全て未分類）
                     status = Array(set.questionCount).fill(0).join(',');
                     localStorage.setItem(statusKey, status);
                 }
@@ -225,7 +225,7 @@
                 }
                 
                 // 統計を計算
-                const counts = [0, 0, 0]; // 未着手問題, 未暗記問題, 暗記済み問題
+                const counts = [0, 0, 0]; // 未分類, 未暗記, 暗記済み
                 set.memoryStatus.forEach(s => {
                     const status = parseInt(s);
                     if (status >= 0 && status <= 2) {
@@ -256,9 +256,9 @@
                     <div class="set-header">${set.id}.『 ${set.title}』コース</div>
                     <div class="status">
                         <!--<button class="total-btn" onclick="startStudyWithFilter(${set.id}, 'all', 'card')">全問: ${set.questionCount}</button>-->
-                        <button class="untouched-btn" onclick="startStudyWithFilter(${set.id}, 0, 'card')">未着手問題: ${set.untouchedCount}</button>
-                        <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1, 'card')">未暗記問題: ${set.notMemorizedCount}</button>
-                        <button class="completed-btn" onclick="startStudyWithFilter(${set.id}, 2, 'card')">暗記済み問題: ${set.completedCount}</button>
+                        <button class="untouched-btn" onclick="startStudyWithFilter(${set.id}, 0, 'card')">未分類: ${set.untouchedCount}</button>
+                        <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1, 'card')">未暗記: ${set.notMemorizedCount}</button>
+                        <button class="completed-btn" onclick="startStudyWithFilter(${set.id}, 2, 'card')">暗記済み: ${set.completedCount}</button>
                         表示方式
                         <div class="view-mode-selector">
                             <input type="radio" id="main-card-mode-${set.id}" name="main-view-mode-${set.id}" value="card" checked onchange="updateMainViewMode(${set.id})">
@@ -333,9 +333,9 @@
                 filteredQuestions = currentQuestions.filter((q, index) => {
                     switch (filter) {
                         case 'all': return true;
-                        case 0: return memoryStatus[index] === 0; // 未着手問題
-                        case 1: return memoryStatus[index] === 1; // 未暗記問題
-                        case 2: return memoryStatus[index] === 2; // 暗記済み問題
+                        case 0: return memoryStatus[index] === 0; // 未分類
+                        case 1: return memoryStatus[index] === 1; // 未暗記
+                        case 2: return memoryStatus[index] === 2; // 暗記済み
                         default: return true;
                     }
                 });
@@ -408,9 +408,9 @@
             filteredQuestions = currentQuestions.filter((q, index) => {
                 switch (filter) {
                     case 'all': return true;
-                    case 0: return memoryStatus[index] === 0; // 未着手問題
-                    case 1: return memoryStatus[index] === 1; // 未暗記問題
-                    case 2: return memoryStatus[index] === 2; // 暗記済み問題
+                    case 0: return memoryStatus[index] === 0; // 未分類
+                    case 1: return memoryStatus[index] === 1; // 未暗記
+                    case 2: return memoryStatus[index] === 2; // 暗記済み
                     default: return true;
                 }
             });
@@ -573,22 +573,22 @@
                         <!--<strong>${question.number}:</strong> ${question.question}-->
                         <strong>${i}:</strong> ${question.question}
                         <div class="controls">
-                            【分類】
+                            <b>分類</b>
                             <div class="radio-group">
                                 <div class="radio-item">
                                     <input type="radio" id="list-untouched-${question.number}" name="list-status-${question.number}" value="0" ${memoryStatus[originalIndex] === 0 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 0)">
-                                    <label for="list-untouched-${question.number}"><span class="label-untouched">未着手問題</span></label>
+                                    <label for="list-untouched-${question.number}"><span class="label-untouched">未分類</span></label>
                                 </div>
                                 <div class="radio-item">
                                     <input type="radio" id="list-not-memorized-${question.number}" name="list-status-${question.number}" value="1" ${memoryStatus[originalIndex] === 1 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 1)">
-                                    <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">未暗記問題</span></label>
+                                    <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">未暗記</span></label>
                                 </div>
                                 <div class="radio-item">
                                     <input type="radio" id="list-completed-${question.number}" name="list-status-${question.number}" value="2" ${memoryStatus[originalIndex] === 2 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 2)">
-                                    <label for="list-completed-${question.number}"><span class="label-completed">暗記済み問題</span></label>
+                                    <label for="list-completed-${question.number}"><span class="label-completed">暗記済み</span></label>
                                 </div>
                             </div>
-                            <button class="success-btn" onclick="toggleQuestionAnswer(${question.number})">正解表示</button>
+                            <button class="success-btn" onclick="toggleQuestionAnswer(${question.number})">正解</button>
                             <button class="warning-btn" id="explanation-btn-${question.number}" onclick="toggleQuestionExplanation(${question.number})" style="display: none;">解説表示</button>
                         </div>
                         <div id="answer-${question.number}" style="display: none; margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">${question.answer}</div>
@@ -619,7 +619,7 @@
             currentSet.completedCount = counts[2];
         }
 
-        // 問題一覧での正解表示切り替え
+        // 問題一覧での正解切り替え
         function toggleQuestionAnswer(questionNumber) {
             const answerDiv = document.getElementById(`answer-${questionNumber}`);
             const explanationBtn = document.getElementById(`explanation-btn-${questionNumber}`);
@@ -635,7 +635,7 @@
                 }
             } else {
                 answerDiv.style.display = 'none';
-                button.textContent = '正解表示';
+                button.textContent = '正解';
                 // 解説ボタンを非表示
                 explanationBtn.style.display = 'none';
                 // 解説も非表示
