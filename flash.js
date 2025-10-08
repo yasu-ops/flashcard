@@ -325,8 +325,21 @@
         async function startStudyWithFilter(setId, filter, viewMode) {
             try {
                 currentSet = questionSets.find(set => set.id === setId);
+
                 currentQuestions = await loadQuestionSet(setId);
-                memoryStatus = [...currentSet.memoryStatus];
+                
+                //memoryStatus = [...currentSet.memoryStatus];
+
+                // ローカルストレージから最新の状態を読み込む
+                const statusKey = `フラッシュカード${setId}`;
+                const savedStatus = localStorage.getItem(statusKey);
+                if (savedStatus) {
+                    memoryStatus = savedStatus.split(',').map(Number);
+                    currentSet.memoryStatus = [...memoryStatus];
+                } else {
+                    memoryStatus = [...currentSet.memoryStatus];
+                }
+
                 currentFilter = filter;
                 
                 // フィルタリング
@@ -341,7 +354,7 @@
                 });
                 
                 if (filteredQuestions.length === 0) {
-                    alert('対象となる問題がありません。');
+                    //alert('対象となる問題がありません。');
                     return;
                 }
                 
@@ -399,49 +412,63 @@
         }
 
         // フィルターと表示形式の組み合わせ処理
+        // 指定されたフィルターと表示モードに基づいて問題を絞り込み、画面を更新する関数
         function filterAndDisplay(filter, viewMode) {
+            // 現在のフィルター状態を更新
             currentFilter = filter;
-            
 
-            
-            // フィルタリング
+            // currentQuestions 配列からフィルター条件に一致する問題だけを抽出
             filteredQuestions = currentQuestions.filter((q, index) => {
                 switch (filter) {
-                    case 'all': return true;
-                    case 0: return memoryStatus[index] === 0; // 未分類
-                    case 1: return memoryStatus[index] === 1; // 未暗記
-                    case 2: return memoryStatus[index] === 2; // 暗記済み
-                    default: return true;
+                    case 'all': // すべての問題を表示
+                        return true;
+                    case 0: // 未分類の問題のみ表示
+                        return memoryStatus[index] === 0;
+                    case 1: // 未暗記の問題のみ表示
+                        return memoryStatus[index] === 1;
+                    case 2: // 暗記済みの問題のみ表示
+                        return memoryStatus[index] === 2;
+                    default: // 不明なフィルターの場合はすべて表示
+                        return true;
                 }
             });
-            
+
+            // フィルター後に表示すべき問題がない場合は警告を表示して処理を中断
             if (filteredQuestions.length === 0) {
                 //alert('対象となる問題がありません。');
                 return;
             }
 
-
-            
+            // 表示モードが「カード形式」の場合の処理
             if (viewMode === 'card') {
-                currentQuestionIndex = 0;
+                currentQuestionIndex = 0; // 最初の問題から表示開始
+
+                // リスト画面を非表示にし、カード学習画面を表示
                 document.getElementById('list-screen').style.display = 'none';
                 document.getElementById('study-screen').style.display = 'block';
-                
-                // ラジオボタンを設定
+
+                // 学習画面のラジオボタン状態を更新（カードモードを選択）
                 document.getElementById('study-card-mode').checked = true;
                 document.getElementById('study-list-mode').checked = false;
-                
+
+                // 学習画面の内容を更新
                 updateStudyScreen();
             } else {
+                // 表示モードが「リスト形式」の場合の処理
+
+                // 学習画面を非表示にし、リスト画面を表示
                 document.getElementById('study-screen').style.display = 'none';
                 document.getElementById('list-screen').style.display = 'block';
-                
-                // ラジオボタンを設定
+
+                // リスト画面のラジオボタン状態を更新（リストモードを選択）
                 document.getElementById('list-card-mode').checked = false;
                 document.getElementById('list-list-mode').checked = true;
-                
+
+                // 問題リストを描画
                 renderQuestionList();
             }
+
+            // 現在選択されているフィルターボタンの状態を更新
             updateActiveFilterButton();
         }
 
@@ -453,6 +480,7 @@
                 return document.querySelector('input[name="list-view-mode"]:checked').value;
             }
         }
+
 
         // 学習画面の更新
         function updateStudyScreen() {
@@ -603,13 +631,15 @@
             });
         }
 
-        // 問題の暗記状況更新
+        // 問題の暗記状態更新
         function updateQuestionStatus(questionIndex, status) {
+            const oldStatus = memoryStatus[questionIndex];
             memoryStatus[questionIndex] = status;
             
             // ローカルストレージ更新
             const statusKey = `フラッシュカード${currentSet.id}`;
             localStorage.setItem(statusKey, memoryStatus.join(','));
+            
             
             // 統計更新
             updateStatusCounts();
@@ -620,6 +650,86 @@
             currentSet.untouchedCount = counts[0];
             currentSet.notMemorizedCount = counts[1];
             currentSet.completedCount = counts[2];
+            
+            // フィルタリングされた問題リストを更新
+            const currentViewMode = getViewMode();
+            const currentQ = filteredQuestions[currentQuestionIndex];
+            
+            // 新しいフィルタリングリストを作成
+            const newFilteredQuestions = currentQuestions.filter((q, index) => {
+                switch (currentFilter) {
+                    case 'all': return true;
+                    case 0: return memoryStatus[index] === 0;
+                    case 1: return memoryStatus[index] === 1;
+                    case 2: return memoryStatus[index] === 2;
+                    default: return true;
+                }
+            });
+            
+            // 現在の問題がフィルタから外れたかチェック
+            const stillInFilter = newFilteredQuestions.some(q => q.number === currentQ.number);
+            
+            filteredQuestions = newFilteredQuestions;
+            
+            if (currentViewMode === 'card') {
+                // カード型の場合
+                if (filteredQuestions.length === 0) {
+                    // フィルタ対象が空になった場合、問題がある分類を探す
+                    const counts = [0, 0, 0];
+                    memoryStatus.forEach(s => counts[s]++);
+                    
+                    let newFilter = null;
+                    if (counts[0] > 0) newFilter = 0;
+                    else if (counts[1] > 0) newFilter = 1;
+                    else if (counts[2] > 0) newFilter = 2;
+                    
+                    if (newFilter !== null) {
+                        filterAndDisplay(newFilter, 'card');
+                    } else {
+                        alert('すべての問題を分類しました。');
+                        document.getElementById('study-screen').style.display = 'none';
+                        document.getElementById('main-screen').style.display = 'block';
+                        renderMainScreen();
+                    }
+                } else if (!stillInFilter) {
+                    // 現在の問題がフィルタから外れた場合
+                    if (currentQuestionIndex >= filteredQuestions.length) {
+                        // 最後の問題だった場合、1つ前を表示
+                        currentQuestionIndex = filteredQuestions.length - 1;
+                    }
+                    // そのままのインデックスで次の問題を表示
+                    updateStudyScreen();
+                } else {
+                    // 現在の問題がまだフィルタ内にある場合
+                    const newIndex = filteredQuestions.findIndex(q => q.number === currentQ.number);
+                    currentQuestionIndex = newIndex;
+                    updateStudyScreen();
+                }
+            } else {
+                // リスト型の場合
+                if (filteredQuestions.length === 0) {
+                    // フィルタ対象が空になった場合
+                    const counts = [0, 0, 0];
+                    memoryStatus.forEach(s => counts[s]++);
+                    
+                    let newFilter = null;
+                    if (counts[0] > 0) newFilter = 0;
+                    else if (counts[1] > 0) newFilter = 1;
+                    else if (counts[2] > 0) newFilter = 2;
+                    
+                    if (newFilter !== null) {
+                        filterAndDisplay(newFilter, 'list');
+                    } else {
+                        alert('すべての問題を分類しました。');
+                        document.getElementById('list-screen').style.display = 'none';
+                        document.getElementById('main-screen').style.display = 'block';
+                        renderMainScreen();
+                    }
+                } else {
+                    // リストを再描画
+                    renderQuestionList();
+                }
+            }
         }
 
         // 問題一覧での正解切り替え
