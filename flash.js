@@ -469,7 +469,7 @@
             document.getElementById('explanation-text').innerHTML = currentQ.explanation;
             document.getElementById('answer-text').style.display = 'none';
             document.getElementById('explanation-text').style.display = 'none';
-            document.getElementById('toggle-answer').textContent = '正解を見て分類する';
+            document.getElementById('toggle-answer').textContent = '正解を見てから分類';
             document.getElementById('toggle-explanation').style.display = 'none';
             document.getElementById('toggle-explanation').textContent = '解説を表示';
             
@@ -588,7 +588,10 @@
                                     <label for="list-completed-${question.number}"><span class="label-completed">暗記済み</span></label>
                                 </div>
                             </div>
-                            <button class="success-btn" onclick="toggleQuestionAnswer(${question.number})">正解</button>
+                        </div>
+                        <!-- ボタンをラジオボタンの下の行に分離 -->
+                        <div class="button-group" style="margin-top: 10px;">
+                            <button class="success-btn" onclick="toggleQuestionAnswer(${question.number})">正解を見てから分類</button>
                             <button class="warning-btn" id="explanation-btn-${question.number}" onclick="toggleQuestionExplanation(${question.number})" style="display: none;">解説表示</button>
                         </div>
                         <div id="answer-${question.number}" style="display: none; margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">${question.answer}</div>
@@ -635,7 +638,7 @@
                 }
             } else {
                 answerDiv.style.display = 'none';
-                button.textContent = '正解';
+                button.textContent = '正解を見てから分類';
                 // 解説ボタンを非表示
                 explanationBtn.style.display = 'none';
                 // 解説も非表示
@@ -709,7 +712,7 @@
                     }
                 } else {
                     answerDiv.style.display = 'none';
-                    this.textContent = '正解を見て分類する';
+                    this.textContent = '正解を見てから分類';
                     // 解説ボタンを非表示
                     explanationBtn.style.display = 'none';
                     // 解説も非表示
