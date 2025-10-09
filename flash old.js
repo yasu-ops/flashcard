@@ -225,17 +225,16 @@
                 }
                 
                 // 統計を計算
-                const counts = [0, 0, 0, 0]; // 未分類, むずい, OKかも, 楽勝
+                const counts = [0, 0, 0]; // 未分類, 未暗記, 暗記済み
                 set.memoryStatus.forEach(s => {
                     const status = parseInt(s);
-                    if (status >= 0 && status <= 3) {
+                    if (status >= 0 && status <= 2) {
                         counts[status]++;
                     }
                 });
                 set.untouchedCount = counts[0];
-                set.notMemorizedCount = counts[1];
-                set.maaOkCount = counts[2];
-                set.rakushoCount = counts[3];
+                set.notMemorizedCount = counts[1]; 
+                set.completedCount = counts[2];
             }
         }
 
@@ -259,10 +258,10 @@
                         <button class="secondary-btn" style="margin-left: 10px; padding: 4px 8px; font-size: 12px;" onclick="resetSetStatus(${set.id})">リセット</button>
                     </div>                    
                     <div class="status">
+                        <!--<button class="total-btn" onclick="startStudyWithFilter(${set.id}, 'all', 'card')">全問: ${set.questionCount}</button>-->
                         <button class="untouched-btn" onclick="startStudyWithFilter(${set.id}, 0, 'card')">未分類: ${set.untouchedCount}</button>
-                        <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1, 'card')">むずい: ${set.notMemorizedCount}</button>
-                        <button class="maa-ok-btn" onclick="startStudyWithFilter(${set.id}, 2, 'card')">ほぼOK: ${set.maaOkCount}</button>
-                        <button class="rakusho-btn" onclick="startStudyWithFilter(${set.id}, 3, 'card')">完璧: ${set.rakushoCount}</button>                        
+                        <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1, 'card')">未暗記: ${set.notMemorizedCount}</button>
+                        <button class="completed-btn" onclick="startStudyWithFilter(${set.id}, 2, 'card')">暗記済み: ${set.completedCount}</button>
                         表示方式
                         <div class="view-mode-selector">
                             <input type="radio" id="main-card-mode-${set.id}" name="main-view-mode-${set.id}" value="card" checked onchange="updateMainViewMode(${set.id})">
@@ -372,9 +371,8 @@
                     switch (filter) {
                         case 'all': return true;
                         case 0: return memoryStatus[index] === 0; // 未分類
-                        case 1: return memoryStatus[index] === 1; // むずい
-                        case 2: return memoryStatus[index] === 2; // OKかも
-                        case 3: return memoryStatus[index] === 3; // 完璧
+                        case 1: return memoryStatus[index] === 1; // 未暗記
+                        case 2: return memoryStatus[index] === 2; // 暗記済み
                         default: return true;
                     }
                 });
@@ -454,8 +452,6 @@
                         return memoryStatus[index] === 1;
                     case 2: // 暗記済みの問題のみ表示
                         return memoryStatus[index] === 2;
-                    case 3: // 暗記済みの問題のみ表示
-                        return memoryStatus[index] === 3;
                     default: // 不明なフィルターの場合はすべて表示
                         return true;
                 }
@@ -562,20 +558,20 @@
 
         // 統計の更新
         function updateStatusCounts() {
-            const counts = [0, 0, 0, 0];
+            const counts = [0, 0, 0];
             memoryStatus.forEach(s => counts[s]++);
             
             // 学習画面用
-            document.getElementById('untouched-count').textContent = counts[0];
+            document.getElementById('completed-count').textContent = counts[2];
             document.getElementById('not-memorized-count').textContent = counts[1];
-            document.getElementById('maa-ok-count').textContent = counts[2];
-            document.getElementById('rakusho-count').textContent = counts[3];
+            document.getElementById('untouched-count').textContent = counts[0];
+            //document.getElementById('study-total-count').textContent = currentSet.questionCount;
             
             // リスト画面用
-            document.getElementById('list-untouched-count').textContent = counts[0];
+            document.getElementById('list-completed-count').textContent = counts[2];
             document.getElementById('list-not-memorized-count').textContent = counts[1];
-            document.getElementById('list-maa-ok-count').textContent = counts[2];
-            document.getElementById('list-rakusho-count').textContent = counts[3];
+            document.getElementById('list-untouched-count').textContent = counts[0];
+            //document.getElementById('list-total-count').textContent = currentSet.questionCount;
         }
 
         // アクティブなフィルターボタンを更新
@@ -591,6 +587,9 @@
             
             let targetClass;
             switch(currentFilter) {
+                // case 'all':
+                //    targetClass = 'total-btn';
+                //    break;
                 case 0:
                     targetClass = 'untouched-btn';
                     break;
@@ -598,13 +597,10 @@
                     targetClass = 'not-memorized-btn';
                     break;
                 case 2:
-                    targetClass = 'maa-ok-btn';
-                    break;
-                case 3:
-                    targetClass = 'rakusho-btn';
+                    targetClass = 'completed-btn';
                     break;
             }
-
+            
             // 現在表示中の画面のボタンにactiveクラスを追加
             if (isStudyScreen) {
                 document.querySelectorAll(`#study-status .${targetClass}`).forEach(btn => btn.classList.add('active'));
@@ -639,15 +635,11 @@
                                 </div>
                                 <div class="radio-item">
                                     <input type="radio" id="list-not-memorized-${question.number}" name="list-status-${question.number}" value="1" ${memoryStatus[originalIndex] === 1 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 1)">
-                                    <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">むずい</span></label>
+                                    <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">未暗記</span></label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" id="list-maa-ok-${question.number}" name="list-status-${question.number}" value="2" ${memoryStatus[originalIndex] === 2 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 2)">
-                                    <label for="list-maa-ok-${question.number}"><span class="label-maa-ok">ほぼOK</span></label>
-                                </div>
-                                <div class="radio-item">
-                                    <input type="radio" id="list-rakusho-${question.number}" name="list-status-${question.number}" value="3" ${memoryStatus[originalIndex] === 3 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 3)">
-                                    <label for="list-rakusho-${question.number}"><span class="label-rakusho">完璧</span></label>
+                                    <input type="radio" id="list-completed-${question.number}" name="list-status-${question.number}" value="2" ${memoryStatus[originalIndex] === 2 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 2)">
+                                    <label for="list-completed-${question.number}"><span class="label-completed">暗記済み</span></label>
                                 </div>
                             </div>
                         </div>
@@ -679,13 +671,12 @@
             updateStatusCounts();
             
             // メイン画面のセット情報も更新
-            const counts = [0, 0, 0, 0, 0];
+            const counts = [0, 0, 0];
             memoryStatus.forEach(s => counts[s]++);
-            set.untouchedCount = counts[0];
-            set.notMemorizedCount = counts[1];
-            set.maaOkCount = counts[2];
-            set.rakushoCount = counts[3];            
-
+            currentSet.untouchedCount = counts[0];
+            currentSet.notMemorizedCount = counts[1];
+            currentSet.completedCount = counts[2];
+            
             // フィルタリングされた問題リストを更新
             const currentViewMode = getViewMode();
             const currentQ = filteredQuestions[currentQuestionIndex];
@@ -697,7 +688,6 @@
                     case 0: return memoryStatus[index] === 0;
                     case 1: return memoryStatus[index] === 1;
                     case 2: return memoryStatus[index] === 2;
-                    case 3: return memoryStatus[index] === 3;
                     default: return true;
                 }
             });
@@ -711,15 +701,14 @@
                 // カード型の場合
                 if (filteredQuestions.length === 0) {
                     // フィルタ対象が空になった場合、問題がある分類を探す
-                    const counts = [0, 0, 0, 0, 0];
+                    const counts = [0, 0, 0];
                     memoryStatus.forEach(s => counts[s]++);
                     
                     let newFilter = null;
                     if (counts[0] > 0) newFilter = 0;
                     else if (counts[1] > 0) newFilter = 1;
                     else if (counts[2] > 0) newFilter = 2;
-                    else if (counts[3] > 0) newFilter = 3;
-
+                    
                     if (newFilter !== null) {
                         filterAndDisplay(newFilter, 'card');
                     } else {
@@ -746,14 +735,13 @@
                 // リスト型の場合
                 if (filteredQuestions.length === 0) {
                     // フィルタ対象が空になった場合
-                    const counts = [0, 0, 0, 0, 0];
+                    const counts = [0, 0, 0];
                     memoryStatus.forEach(s => counts[s]++);
                     
                     let newFilter = null;
                     if (counts[0] > 0) newFilter = 0;
                     else if (counts[1] > 0) newFilter = 1;
                     else if (counts[2] > 0) newFilter = 2;
-                    else if (counts[3] > 0) newFilter = 3;
                     
                     if (newFilter !== null) {
                         filterAndDisplay(newFilter, 'list');
@@ -836,20 +824,16 @@
                 document.getElementById('study-screen').style.display = 'none';
                 document.getElementById('list-screen').style.display = 'none';
                 document.getElementById('main-screen').style.display = 'block';
-                loadQuestionSets().then(() => {
-                    renderMainScreen();
-                });
+                renderMainScreen();
             });
             
             document.getElementById('back-to-main-from-list').addEventListener('click', function() {
                 document.getElementById('study-screen').style.display = 'none';
                 document.getElementById('list-screen').style.display = 'none';
                 document.getElementById('main-screen').style.display = 'block';
-                loadQuestionSets().then(() => {
-                    renderMainScreen();
-                });
+                renderMainScreen();
             });
-
+            
             // 学習画面のイベント
             document.getElementById('toggle-answer').addEventListener('click', function() {
                 const answerDiv = document.getElementById('answer-text');
