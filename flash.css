@@ -427,3 +427,153 @@
             color: #666;
             padding: 20px;
         }
+
+
+        /* スマホ対応 */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+                margin-bottom: 15px;
+            }
+            
+            /* 学習記録ボタンを上部から通常配置に変更 */
+            .record-controls {
+                position: static;
+                flex-direction: column;
+                margin-bottom: 15px;
+            }
+            
+            .record-btn {
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            /* ステータスボタンを2行に折り返し */
+            .status {
+                gap: 5px;
+            }
+            
+            .status button {
+                flex: 0 0 calc(50% - 5px);
+                padding: 8px 4px;
+                font-size: 12px;
+                white-space: normal;
+                min-height: 40px;
+            }
+            
+            /* 表示方式セレクターも折り返し */
+            .view-mode-selector {
+                flex: 0 0 100%;
+                margin-left: 0;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            /* カード型のナビゲーション */
+            .navigation {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .navigation > button {
+                width: 100%;
+                order: 2;
+            }
+            
+            .navigation .radio-group {
+                width: 100%;
+                flex-wrap: wrap;
+                order: 1;
+                gap: 8px;
+            }
+            
+            .navigation .radio-item {
+                flex: 0 0 calc(50% - 4px);
+                font-size: 13px;
+                justify-content: center;
+            }
+            
+            .navigation .radio-item:first-child {
+                flex: 0 0 100%;
+            }
+            
+            #prev-question {
+                order: 3;
+            }
+            
+            #next-question {
+                order: 4;
+            }
+            
+            /* 問題カード */
+            .question-card {
+                padding: 15px;
+                min-height: 150px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+            
+            .answer-text, .explanation-text {
+                font-size: 14px;
+                padding: 15px;
+            }
+            
+            /* 一覧型の問題アイテム */
+            .question-list-item {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .question-content {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .controls .radio-group {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .controls .radio-item {
+                flex: 0 0 calc(50% - 5px);
+                font-size: 12px;
+            }
+            
+            .controls .radio-item:first-child {
+                flex: 0 0 100%;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group button {
+                width: 100%;
+            }
+            
+            /* セットアイテム */
+            .set-item {
+                padding: 15px;
+            }
+            
+            .set-header {
+                font-size: 16px;
+            }
+        }
