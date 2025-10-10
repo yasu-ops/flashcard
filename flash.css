@@ -370,10 +370,10 @@ button {
 
 .radio-group {
     display: flex;
-    gap: 15px;
+    gap: 15px; /* ここは共通で維持 */
     margin: 20px 0;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* デフォルトは wrap に戻す */
 }
 
 .radio-item {
@@ -465,14 +465,14 @@ button {
         font-size: 14px;
     }
     
-    /* ステータスボタンを2行に折り返し */
+    /* メイン画面と学習画面のステータスボタン */
     .status {
         gap: 5px;
+        flex-wrap: wrap; /* 修正: ステータスボタンは wrap を維持 */
     }
     
     .status button {
-        flex: 0 0 calc(50% - 5px);
-        padding: 8px 4px;
+        flex: 0 0 calc(50% - 5px); /* 2列表示を維持 */        padding: 8px 4px;
         font-size: 12px;
         white-space: normal;
         min-height: 40px;
@@ -496,18 +496,49 @@ button {
         width: 100%;
         order: 2;
     }
-    
+
+    /* === カード型の分類ボタン用 === */
+    /* 学習画面の分類ボタン (navigation 内の radio-group) */
+    #study-screen .navigation .radio-group {
+        width: 100%;
+        gap: 8px; /* スマホでは小さめのギャップ */
+        justify-content: center;
+        flex-wrap: wrap; /* カード型は改行させる (以前の動作に戻す) */
+        overflow-x: visible; /* 横スクロールを不要にする */
+        padding-bottom: 0; /* 不要なパディングを削除 */
+    }
+
     .navigation .radio-group {
         width: 100%;
         order: 1;
         gap: 8px;
         justify-content: center;
+        flex-wrap: nowrap; /* これを追加 */
+        overflow-x: auto; /* はみ出した場合にスクロールできるようにする */
+        padding-bottom: 5px; /* スクロールバーが見えるように少しスペースを空ける */        
     }
-    
+
+    #study-screen .navigation .radio-item {
+        font-size: 12px;
+        flex: 0 0 auto;
+        min-width: auto; /* コンテンツに応じた幅に戻す */
+        white-space: nowrap; /* テキストが改行されないように */
+    }
+
+    /* 「分類」ラベルの改行を防止 (もしあれば) */
+    #study-screen .navigation .radio-item:first-child {
+        /* flex: 0 0 100%; の設定を削除またはコメントアウト */
+        /* justify-content: center; も削除 */
+        /* margin-bottom: 3px; も削除 */
+        flex: 0 0 auto; /* 他のラジオボタンと同じ振る舞いに */
+        margin-bottom: 0; /* 不要なマージンを削除 */
+    }
+
     .navigation .radio-item {
         font-size: 12px;
         flex: 0 0 auto;
-    }
+        /* min-width を設定して、コンテンツが収まるようにする */
+        min-width: fit-content;   }
     
     .navigation .radio-item:first-child {
         flex: 0 0 100%;
@@ -549,26 +580,51 @@ button {
         margin-bottom: 10px;
     }
     
-    .controls {
-        gap: 10px;
+    /* 一覧型のnavigationは幅いっぱいに */
+    .question-content .navigation {
+        width: 100%;
+        justify-content: center;
     }
     
-    .controls .radio-group {
+    .question-content .navigation .radio-group {
+        width: 100%;
         gap: 5px;
         justify-content: center;
     }
     
-    .controls .radio-item {
-        font-size: 11px;
+    .question-content .navigation .radio-item {
+        font-size: 13px;
         flex: 0 0 auto;
     }
-    
-    .controls .radio-item:first-child {
-        flex: 0 0 100%;
+          
+    /* .question-content .navigation .radio-item:first-child のルールを削除 */
+    /* これが原因で「未分類」が強制的に改行されていました */
+    /*    
+    .question-content .navigation .radio-item:first-child {
+        flex-basis: 100%;
         margin-bottom: 5px;
         justify-content: center;
+    }    
+    */
+    /* === 一覧型の分類ボタン用 === */
+    /* 問題リスト内の各アイテムの分類ボタン (question-list-item 内の radio-group) */
+    .question-list-item .radio-group {
+        width: 100%;
+        gap: 5px; /* もっと小さめのギャップ */
+        justify-content: flex-start; /* 左寄せ */
+        flex-wrap: nowrap; /* 一覧型は改行させない */
+        overflow-x: auto; /* 必要に応じて横スクロール */
+        padding-bottom: 5px; /* スクロールバーが見えるように */
     }
-    
+
+    .question-list-item .radio-item {
+        font-size: 13px;
+        flex: 0 0 auto;
+        min-width: fit-content; /* コンテンツにぴったりの幅を維持 */
+        white-space: nowrap; /* テキストが改行されないように */
+    }
+
+
     /* セットアイテム */
     .set-item {
         padding: 15px;
