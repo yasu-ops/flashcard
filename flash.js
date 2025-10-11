@@ -5,7 +5,7 @@ let currentSet = null;
 let currentQuestions = [];
 let filteredQuestions = [];
 let currentQuestionIndex = 0;
-let memoryStatus = []; // 現在のセットの学習記録 (0:未分類, 1:むずい, 2:ほぼOK, 3:完璧)
+let memoryStatus = []; // 現在のセットの学習記録 (0:未分類, 1:むずっ, 2:OKかな！, 3:完璧♥)
 let currentFilter = 'all'; // 現在アクティブなフィルター
 
 // 初期化処理
@@ -249,7 +249,7 @@ async function loadQuestionSets() {
         }
 
         // 統計を計算
-        const counts = [0, 0, 0, 0]; // 0:未分類, 1:むずい, 2:ほぼOK, 3:完璧
+        const counts = [0, 0, 0, 0]; // 0:未分類, 1:むずっ, 2:OKかな！, 3:完璧♥
         set.memoryStatus.forEach(s => {
             const status = parseInt(s);
             if (status >= 0 && status <= 3) { // 0～3の範囲外のデータは無視
@@ -286,9 +286,9 @@ function renderMainScreen() {
             </div>                    
             <div class="status">
                 <button class="untouched-btn" onclick="startStudyWithFilter(${set.id}, 0)">未分類: ${set.untouchedCount}</button>
-                <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1)">むずい: ${set.notMemorizedCount}</button>
-                <button class="maa-ok-btn" onclick="startStudyWithFilter(${set.id}, 2)">ほぼOK: ${set.maaOkCount}</button>
-                <button class="rakusho-btn" onclick="startStudyWithFilter(${set.id}, 3)">完璧: ${set.rakushoCount}</button>                        
+                <button class="not-memorized-btn" onclick="startStudyWithFilter(${set.id}, 1)">むずっ: ${set.notMemorizedCount}</button>
+                <button class="maa-ok-btn" onclick="startStudyWithFilter(${set.id}, 2)">OKかな！: ${set.maaOkCount}</button>
+                <button class="rakusho-btn" onclick="startStudyWithFilter(${set.id}, 3)">完璧♥: ${set.rakushoCount}</button>                        
                 表示方式
                 <div class="view-mode-selector">
                     <input type="radio" id="main-card-mode-${set.id}" name="main-view-mode-${set.id}" value="card" onchange="updateMainViewMode(${set.id}, this.value)">
@@ -405,9 +405,9 @@ async function startStudyWithFilter(setId, filter) { // viewMode 引数を削除
             switch (filter) {
                 case 'all': return true; // 全て表示 (現在未使用)
                 case 0: return memoryStatus[index] === 0; // 未分類
-                case 1: return memoryStatus[index] === 1; // むずい
-                case 2: return memoryStatus[index] === 2; // ほぼOK
-                case 3: return memoryStatus[index] === 3; // 完璧
+                case 1: return memoryStatus[index] === 1; // むずっ
+                case 2: return memoryStatus[index] === 2; // OKかな！
+                case 3: return memoryStatus[index] === 3; // 完璧♥
                 default: return true; // デフォルトでは全て表示
             }
         });
@@ -479,9 +479,9 @@ function filterAndDisplay(filter, viewMode) {
         switch (filter) {
             case 'all': return true;
             case 0: return memoryStatus[index] === 0; // 未分類
-            case 1: return memoryStatus[index] === 1; // むずい
-            case 2: return memoryStatus[index] === 2; // ほぼOK
-            case 3: return memoryStatus[index] === 3; // 完璧
+            case 1: return memoryStatus[index] === 1; // むずっ
+            case 2: return memoryStatus[index] === 2; // OKかな！
+            case 3: return memoryStatus[index] === 3; // 完璧♥
             default: return true;
         }
     });
@@ -570,7 +570,7 @@ function updateStudyScreen() {
 
 // 統計情報の更新 (学習画面と一覧画面の両方)
 function updateStatusCounts() {
-    const counts = [0, 0, 0, 0]; // 0:未分類, 1:むずい, 2:ほぼOK, 3:完璧
+    const counts = [0, 0, 0, 0]; // 0:未分類, 1:むずっ, 2:OKかな！, 3:完璧♥
     memoryStatus.forEach(s => counts[s]++);
     
     // 学習画面用カウントの更新
@@ -639,15 +639,15 @@ function renderQuestionList() {
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="list-not-memorized-${question.number}" name="list-status-${question.number}" value="1" ${memoryStatus[originalIndex] === 1 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 1)">
-                            <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">むずい</span></label>
+                            <label for="list-not-memorized-${question.number}"><span class="label-not-memorized">むずっ</span></label>
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="list-maa-ok-${question.number}" name="list-status-${question.number}" value="2" ${memoryStatus[originalIndex] === 2 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 2)">
-                            <label for="list-maa-ok-${question.number}"><span class="label-maa-ok">ほぼOK</span></label>
+                            <label for="list-maa-ok-${question.number}"><span class="label-maa-ok">OKかな！</span></label>
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="list-rakusho-${question.number}" name="list-status-${question.number}" value="3" ${memoryStatus[originalIndex] === 3 ? 'checked' : ''} onchange="updateQuestionStatus(${originalIndex}, 3)">
-                            <label for="list-rakusho-${question.number}"><span class="label-rakusho">完璧</span></label>
+                            <label for="list-rakusho-${question.number}"><span class="label-rakusho">完璧♥</span></label>
                         </div>
                     </div>
                 </div>
@@ -925,7 +925,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 学習画面の分類ラジオボタンの変更イベント (未分類、むずい、ほぼOK、完璧)
+    // 学習画面の分類ラジオボタンの変更イベント (未分類、むずっ、OKかな！、完璧♥)
     document.querySelectorAll('input[name="status"]').forEach(radio => {
         radio.addEventListener('change', function() {
             if (this.checked) {

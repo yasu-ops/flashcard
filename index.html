@@ -17,14 +17,15 @@
 
         <!-- メイン画面 -->
         <div id="main-screen">
-            <h1>分類して暗記</h1>
+            <h1>🐱分類して暗記🐱</h1>
             <ul>
             <li>やること
                 <ul>
-                    <li><span class="label-untouched">未分類</span>を<span class="label-not-memorized">むずい</span>・<span class="label-maa-ok">ほぼOK</span>・<span class="label-rakusho">完璧</span>に分類。</li>
+                    <li><span class="label-untouched">未分類</span>を<span class="label-not-memorized">むずっ</span>・<span class="label-maa-ok">OKかな！</span>・<span class="label-rakusho">完璧♥</span>に分類。</li>
                     <ul>
-                        <li><span class="label-not-memorized">むずい</span>はあとで少しずつ<span class="label-maa-ok">ほぼOK</span>へ。</li>
-                        <li><span class="label-completed">ほぼOK</span>は時々見直し、忘れていないか確認。</li>
+                        <li><span class="label-not-memorized">むずっ</span>は少しずつ<span class="label-maa-ok">OKかな！</span>へ。</li>
+                        <li><span class="label-completed">OKかな！</span>は時々見直し、忘れてないか確認。</li>
+                        <li>もう大丈夫と思ったら<span class="label-rakusho">完璧♥</span>へ。
                     </ul>
                 </ul>
             <li>表示方式
@@ -32,7 +33,7 @@
                     <li>一覧型：全問を一覧表示</li></ul>
             <li>保存
              <ul><li>分類結果は端末に自動保存。（まれに消える）</li>
-                 <li>確実に保存したい・他の端末で続きをやりたい→エクスポートで書き出し、インポートで読み込む。</li>
+                 <li>「確実に保存」・「続きを他の端末で」→エクスポートで書き出し、インポートで読み込む。</li>
                 </ul>   
             </ul>
             <div id="sets-container">
@@ -48,9 +49,9 @@
             </div>
             <div class="status" id="study-status">
                 <button class="untouched-btn" onclick="filterAndDisplay(0, getViewMode())">未分類: <span id="untouched-count">0</span></button>
-                <button class="not-memorized-btn" onclick="filterAndDisplay(1, getViewMode())">むずい: <span id="not-memorized-count">0</span></button>
-                <button class="maa-ok-btn" onclick="filterAndDisplay(2, getViewMode())">ほぼOK: <span id="maa-ok-count">0</span></button>
-                <button class="rakusho-btn" onclick="filterAndDisplay(3, getViewMode())">完璧: <span id="rakusho-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, getViewMode())">むずっ: <span id="not-memorized-count">0</span></button>
+                <button class="maa-ok-btn" onclick="filterAndDisplay(2, getViewMode())">OKかな！: <span id="maa-ok-count">0</span></button>
+                <button class="rakusho-btn" onclick="filterAndDisplay(3, getViewMode())">完璧♥: <span id="rakusho-count">0</span></button>
                 表示方式
                 <div class="view-mode-selector">
                     <input type="radio" id="study-card-mode" name="study-view-mode" value="card" checked>
@@ -78,15 +79,15 @@
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="not-memorized-radio" name="status" value="1">
-                            <label for="not-memorized-radio"><span class="label-not-memorized">むずい</span></label>
+                            <label for="not-memorized-radio"><span class="label-not-memorized">むずっ</span></label>
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="maa-ok-radio" name="status" value="2">
-                            <label for="maa-ok-radio"><span class="label-maa-ok">ほぼOK</span></label>
+                            <label for="maa-ok-radio"><span class="label-maa-ok">OKかな！</span></label>
                         </div>
                         <div class="radio-item">
                             <input type="radio" id="rakusho-radio" name="status" value="3">
-                            <label for="rakusho-radio"><span class="label-rakusho">完璧</span></label>
+                            <label for="rakusho-radio"><span class="label-rakusho">完璧♥</span></label>
                         </div>
                 </div>
                 <button id="next-question" class="secondary-btn">次へ</button>
@@ -105,9 +106,9 @@
             <b>『<span id="list-title"></span>』コース</b>
             <div class="status" id="list-status">
                 <button class="untouched-btn" onclick="filterAndDisplay(0, 'list')">未分類: <span id="list-untouched-count">0</span></button>
-                <button class="not-memorized-btn" onclick="filterAndDisplay(1, 'list')">むずい: <span id="list-not-memorized-count">0</span></button>
-                <button class="maa-ok-btn" onclick="filterAndDisplay(2, 'list')">ほぼOK: <span id="list-maa-ok-count">0</span></button>
-                <button class="rakusho-btn" onclick="filterAndDisplay(3, 'list')">完璧: <span id="list-rakusho-count">0</span></button>
+                <button class="not-memorized-btn" onclick="filterAndDisplay(1, 'list')">むずっ: <span id="list-not-memorized-count">0</span></button>
+                <button class="maa-ok-btn" onclick="filterAndDisplay(2, 'list')">OKかな！: <span id="list-maa-ok-count">0</span></button>
+                <button class="rakusho-btn" onclick="filterAndDisplay(3, 'list')">完璧♥: <span id="list-rakusho-count">0</span></button>
                 表示方式
                 <div class="view-mode-selector">
                     <input type="radio" id="list-card-mode" name="list-view-mode" value="card">
