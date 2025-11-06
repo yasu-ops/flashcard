@@ -342,7 +342,7 @@ button {
 }
 
 .answer-text {
-    font-size: 16px;
+    font-size: 22px; /*16px;*/
     line-height: 1.6;
     padding: 20px;
     background: #f8f9fa;
@@ -352,7 +352,7 @@ button {
 }
 
 .explanation-text {
-    font-size: 16px;
+    font-size: 22px; /*16px;*/
     line-height: 1.6;
     padding: 20px;
     background: #fff3cd;
@@ -569,7 +569,7 @@ button {
     }
     
     .answer-text, .explanation-text {
-        font-size: 14px;
+        font-size:  20px; /*14px;*/
         padding: 15px;
     }
     
